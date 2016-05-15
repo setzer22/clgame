@@ -43,6 +43,9 @@
   (gl (Display/setDisplayMode (DisplayMode. width height))
       (Display/create)))
 
+(defn sync-to-display [fps]
+  (Display/sync fps))
+
 (defn destroy-display []
   (gl (Display/destroy)))
 

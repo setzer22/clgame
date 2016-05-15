@@ -7,6 +7,7 @@
 
 (set! *warn-on-reflection* true)
 (set! *unchecked-math* true)
+(alter-var-root #'*out* (constantly *out*))
 
 (defrecord Entity [x y size])
 
@@ -20,12 +21,6 @@
   {:timestamp 0
    :entities (map #(apply entity %) (take 10 (repeatedly random-entity-coords)))
    :running true})
-
-(defn render [state]
-  (gl/cxu 
-    (gl/glColor3f 0.5 1.0 0.5)
-    (doseq [{:keys [x y size]} (:entities state)] 
-      (gl/center-rect x y size size))))
 
 ;TODO: Too slow
 (let [keyboard-keys (map #(.getName %) (filter #(re-matches #"KEY_.*" (.getName %)) (.getDeclaredFields Keyboard )))]
@@ -73,7 +68,7 @@
 
 (defn pos [{:keys [r0 t0 v]} t]
   (let [delta (- t t0)]
-    (v+ r0 (v* v t))))
+    (v+ r0 (v* v delta))))
 
 (defn move [entity t]
   (if (moving? entity)
@@ -83,27 +78,28 @@
       :move-eq)
     entity))
 
-(move (assoc (entity 0 0 5) :move-eq (move-eq 0 (vec2 0 0) (vec2 1 1))) 10)
-
 (defn input-dir [input]
   (vec2 
-    (cond (:left input) 1
-          (:right input) -1
+    (cond (:left input) -1
+          (:right input) 1
           :else 0)
     (cond (:up input) 1
           (:down input) -1
           :else 0)))
+
+(def state {:timestamp 0, 
+            :entities [],
+            :running true})
 
 (defn pure-tick [state timestamp input]
   (s/transform [:entities s/FIRST #(or (not-moving? %) (>= (elapsed timestamp %) 1000))] 
                (fn [{:keys [x y] :as hero}]
                  (let [dir (input-dir input)]
                    (if (not (z? dir))
-                     (assoc (move hero timestamp) :move-eq (move-eq timestamp (vec2 x y) (v* dir 0.01)))
+                     (let [{:keys [x y] :as moved-hero} (move hero timestamp)] 
+                       (assoc moved-hero :move-eq (move-eq timestamp (vec2 x y) (v* dir 0.06))))
                      (dissoc (move hero timestamp) :move-eq hero))))
                state))
-
-(println *e)
 
 (defn tick [state timestamp]
   (let [input (input)] 
@@ -113,24 +109,34 @@
 
 ;TODO Timer resolution
 (defn game-loop []
-  (loop [state (make-initial-state)
+  (time (loop [state (make-initial-state)
          delta 0
          timestamp (Sys/getTime)]
-    ;(render state)
     (def state state)
-    (if (< delta 66) (Thread/sleep (- 66 delta))) ; Lock at 15FPS
+    (gl/sync-to-display 30)
     (when (:running state)
       (let [new-timestamp (Sys/getTime)] 
-        (recur (tick state timestamp)
+        (recur (assoc (tick state timestamp) :timestamp timestamp)
                (- new-timestamp timestamp)
-               new-timestamp)))))
+               new-timestamp))))))
+
+(defn render [state]
+  (gl/cxu 
+      (gl/glColor3f 0.5 1.0 0.5)
+      (doseq [e (:entities state)] 
+        (if (moving? e)
+          (do
+            (let [{size :size, eq :move-eq} e 
+                  {:keys [x y]} (pos eq (Sys/getTime))] 
+              (gl/center-rect x y size size)))
+          (gl/center-rect (:x e) (:y e) (:size e) (:size e))))))
 
 (defn render-loop []
   (gl/init-display 800 600)
   (gl/glOrtho 0 800 0 600 -1 1)
   (loop [] 
     (if (:running state)
-      (do (render state) ; Render is already locked at 60FPS
+      (do (try (render state)) ; Render is already locked at 60FPS
           (recur))
       (gl/destroy-display))))
 
