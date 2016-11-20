@@ -7,11 +7,11 @@
 
 (def opengl-executor (Executors/newSingleThreadExecutor))
 
-(comment (defmacro gl [& body]
-  `(deref (.submit opengl-executor (fn [] ~@body)))))
-
 (defmacro gl [& body]
-  `(do ~@body))
+  `(deref (.submit opengl-executor (fn [] ~@body))))
+
+(comment (defmacro gl [& body]
+   `(do ~@body)))
 
 (defn load-texture [path]
   "Loads a texture and returns its texture-id"
@@ -20,7 +20,7 @@
         {:keys [data width height]} (texture/load-texture f)
         tex-id (gl (GL11/glGenTextures))]
     ; Idiomatic clojure here
-    (gl 
+    (gl
       (GL11/glBindTexture GL11/GL_TEXTURE_2D tex-id)
       (GL11/glTexParameteri GL11/GL_TEXTURE_2D GL11/GL_TEXTURE_WRAP_S, GL12/GL_CLAMP_TO_EDGE)
       (GL11/glTexParameteri GL11/GL_TEXTURE_2D GL11/GL_TEXTURE_WRAP_T, GL12/GL_CLAMP_TO_EDGE)
@@ -66,12 +66,12 @@
 (defn center-rect [^double x ^double y ^double w ^double h]
   (let [w2 (/ w 2)
         h2 (/ h 2)]
-    (quad (- x h2) (- y h2) 0.0 0.0
-          (+ x h2) (- y h2) 1.0 0.0
-          (+ x h2) (+ y h2) 1.0 1.0
-          (- x h2) (+ y h2) 0.0 1.0)))
+    (quad (- x w2) (- y h2) 0.0 0.0
+          (+ x w2) (- y h2) 1.0 0.0
+          (+ x w2) (+ y h2) 1.0 1.0
+          (- x w2) (+ y h2) 0.0 1.0)))
 
-(defn glBindTexture [tid] 
+(defn glBindTexture [tid]
   (gl (GL11/glBindTexture GL11/GL_TEXTURE_2D tid)))
 
 (defn glOrtho [left right bottom top znear zfar]
@@ -84,8 +84,3 @@
   `(do (glClear 0.0 0.5 1.0 1.0)
        ~@body
        (update-display)))
-
-
-
-
-
