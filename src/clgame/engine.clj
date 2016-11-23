@@ -24,20 +24,7 @@
          (map first))
         (:entities state)))
 
-(defn default-execute-system [state system]
-  ;;TODO: Check which entities are affected by the subsystem
-  (let [system-fn (get-in state [:systems system :fn])
-        component-ids (get-in state [:systems system :components])
-        entities (get-all-entities-with state component-ids)
-        components (mapv #(get-in state [:component-state %]) component-ids)]
-    (loop [state state
-           [e & es] entities]
-      (let [next-components (apply system-fn (mapv e components))
-            updated-state (update-components state e component-ids next-components)]
-        (if (seq es)
-          (recur updated-state
-                 es)
-          updated-state)))))
+
 
 (defn execute-system [state system]
   (let [iterator-fn (get-in state [:systems system :iterator-fn])]
