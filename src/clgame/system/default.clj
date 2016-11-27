@@ -1,4 +1,4 @@
-(ns clgame.system-functions
+(ns clgame.system.default 
   (:require [clojure.spec :as spec]
             [clojure.spec.test :as stest]
             [clgame.component :as c]

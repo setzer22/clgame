@@ -2,7 +2,8 @@
   (:import [java.util.concurrent Executors]
            [org.lwjgl.opengl Display DisplayMode GL11 GL12])
   (:require [clojure.java.io :as io]
-            [clgame.texture :as texture])
+            [clgame.texture :as texture]
+            [clgame.gl :as gl])
   (:gen-class))
 
 (def opengl-executor (Executors/newSingleThreadExecutor))
@@ -79,6 +80,9 @@
       (GL11/glLoadIdentity)
       (GL11/glOrtho left right bottom top znear zfar)
       (GL11/glMatrixMode GL11/GL_MODELVIEW)))
+
+(defn enable-texture []
+  (gl (GL11/glEnable GL11/GL_TEXTURE_2D)))
 
 (defmacro cxu [& body]
   `(do (glClear 0.0 0.5 1.0 1.0)
