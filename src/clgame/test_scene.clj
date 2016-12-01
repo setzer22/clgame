@@ -2,6 +2,9 @@
   (:require [clgame.gl :as gl]
             [clgame.scene :as sc]
             [clgame.entity :as e]
+            [clgame.system.debug-keys]
+            [clgame.system.renderer]
+            [clgame.system.movement]
             [clgame.system.registration :refer [add-system]]
             [clgame.game-loop :as game-loop]))
 
@@ -14,7 +17,7 @@
                    :h 50}
                   {:texture-id 1}]))
 
-(def test-scene
+(def test-scene 
   (-> (sc/mk-scene)
       (add-random-entity)
       (add-random-entity)
@@ -25,6 +28,7 @@
       (add-system :Renderer)
       (add-system :Movement)
       (add-system :DebugKeys)))
+
 
 (try (game-loop/run-game test-scene)
      (catch Throwable e (do (gl/destroy-display)
