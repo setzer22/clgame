@@ -8,16 +8,18 @@
 
 (spec/def ::entities (spec/and vector? ::e/entity))
 (spec/def ::component-data (spec/map-of ::c/type (spec/map-of ::e/id #(not (nil? %)))))
-(spec/def ::systems (spec/and vector? ))
+(spec/def ::systems (spec/and vector? )) ;TODO: System spec
 (spec/def ::messages (spec/map-of ::m/from ::m/message))
-(spec/def ::scene (spec/keys :req [::entities ::components ::systems ::messages]))
+(spec/def ::system-data (spec/map-of ::s/name any?))
+(spec/def ::scene (spec/keys :req [::entities ::component-data ::system-data ::systems ::messages]))
 
 (defn mk-scene
   ([]
    {::entities []
     ::component-data {}
     ::systems []
-    ::messages {}}))
+    ::messages {}
+    ::system-data {}}))
 
 (defn add-entity [scene entity components-data]
   (as-> scene s

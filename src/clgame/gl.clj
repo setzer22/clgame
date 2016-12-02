@@ -73,7 +73,7 @@
           (- x w2) (+ y h2) 0.0 1.0)))
 
 (defn glBindTexture [tid]
-  (gl (GL11/glBindTexture GL11/GL_TEXTURE_2D tid)))
+  (comment (gl (GL11/glBindTexture GL11/GL_TEXTURE_2D tid))))
 
 (defn glOrtho [left right bottom top znear zfar]
   (gl (GL11/glMatrixMode GL11/GL_PROJECTION)

@@ -4,10 +4,10 @@
             [clgame.entity :as e]
             [clgame.message :as m]
             [clgame.system.registration :refer [register-system]]
-            [clgame.system.default :refer [default-system-executor]])
+            [clgame.system.default :as ex :refer [default-system-executor]])
   (:import [org.lwjgl.input Keyboard Mouse]))
 
-(defn debug-keys [e-id [_]]
+(defn debug-keys [e-id [_] inbox]
   (if (Keyboard/isKeyDown Keyboard/KEY_ESCAPE)
     {::m/messages [(m/mk-message e-id ::m/global-msg :quit :quit)]}
     {}))
