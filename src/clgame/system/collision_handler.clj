@@ -25,11 +25,32 @@
           (and (posz? x) (neg? y)) 4
           :else (throw (Exception. "wat?")))))
 
+(def abs #(Math/abs %))
+
+(defmacro side
+  "..."
+  {:style/indent 2}
+  [s d & {:keys [top bottom left right]}]
+  `(let [{dx# :x dy# :y} (-v ~s ~d)]
+     (cond (and (>= (abs dx#) (abs dy#)) (>= dx# 0)) ~left
+           (and (>= (abs dx#) (abs dy#)) (< dx# 0)) ~right
+           (and (< (abs dx#) (abs dy#)) (>= dy# 0)) ~bottom
+           (and (< (abs dx#) (abs dy#)) (< dy# 0)) ~top)))
+
+(side (v2 0 0) (v2 1.3 1)
+  :top "top"
+  :bottom "down"
+  :left "left"
+  :right "right")
+
 (defn static-collision [[t1 c1 :as static] [t2 c2 :as moving]]
   (let [c1 (v2 (:x t1) (:x t2))
-        c2 (v2 (:x t1) (:x t2))
-        q (quadrant-with-rotation c1 c2 (/ Math/PI 4))]
-    ))
+        c2 (v2 (:x t1) (:x t2))]
+    (side c1 c2 ;TODO: !!
+      :top nil
+      :down nil
+      :left nil
+      :right nil)))
 
 (defn dynamic-collision [a b])
 
