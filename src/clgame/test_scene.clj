@@ -7,6 +7,8 @@
             [clgame.system.renderer]
             [clgame.system.movement]
             [clgame.system.controller]
+            [clgame.system.collision]
+            [clgame.system.collision-handler]
             [clgame.system.registration :refer [add-system]]
             [clgame.game-loop :as game-loop]
             [clgame.system :as s]))
@@ -49,6 +51,7 @@
       (add-system :Controller)
       (add-system :Movement)
       (add-system :Collision)
+      (add-system :CollisionHandler)
       (add-system :Renderer)
       (add-system :DebugKeys)))
 

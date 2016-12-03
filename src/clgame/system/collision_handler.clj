@@ -37,26 +37,76 @@
            (and (< (abs dx#) (abs dy#)) (>= dy# 0)) ~bottom
            (and (< (abs dx#) (abs dy#)) (< dy# 0)) ~top)))
 
-(side (v2 0 0) (v2 1.3 1)
-  :top "top"
-  :bottom "down"
-  :left "left"
-  :right "right")
+(defmacro half [x]
+  `(/ ~x 2))
 
-(defn static-collision [[t1 c1 :as static] [t2 c2 :as moving]]
-  (let [c1 (v2 (:x t1) (:x t2))
-        c2 (v2 (:x t1) (:x t2))]
-    (side c1 c2 ;TODO: !!
-      :top nil
-      :down nil
-      :left nil
-      :right nil)))
+(defn push-vector [t1 t2]
+  "The minimum push vector for intersecting rectangles t1 and t2.
+   Assumes t1 is static and t2 dynamic."
+  (let [s (v2 (:x t1) (:y t1))
+        m (v2 (:x t2) (:y t2))
+        [sw mw sh mh] [(half (:w t1)) (half (:w t2)) (half (:h t1)) (half (:h t2))]
+        t (-v m s)
+        push-x (+ mw sw (- (abs (:x t))))
+        push-y (+ mh sh (- (abs (:y t))))]
+    (if (<= push-y push-x)
+      (cond
+        (pos? (:y t)) (v2 0 push-y)
+        :else         (v2 0 (- push-y)))
+      (cond
+        (pos? (:x t)) (v2 push-x 0)
+        :else         (v2 (- push-x) 0)))))
 
-(defn dynamic-collision [a b])
+;(defn dynamic-collision [a b])
 
-(defn handle-collision [[t1 c1 :as e1] [t2 c2 :as e2]]
-  (cond
-    (and (:static c1) (not (:static c2))) (static-collision e1 e2)
-    (and (not (:static c1)) (:static c2)) (static-collision e2 e1)
-    (and (not (:static c1)) (not (:static c2))) (dynamic-collision e1 e2)
-    :else [e1 e2]))
+;(defn handle-collision [[t1 c1 :as e1] [t2 c2 :as e2]]
+  ;(cond
+    ;(and (:static c1) (not (:static c2))) (static-collision e1 e2)
+    ;(and (not (:static c1)) (:static c2)) (static-collision e2 e1)
+    ;(and (not (:static c1)) (not (:static c2))) (dynamic-collision e1 e2)
+    ;:else [e1 e2]))
+
+
+(defn static-collision [t1 t2]
+  (let [{:keys [x y]} (+v (v2 (:x t2) (:y t2)) (push-vector t1 t2))]
+    (assoc t2 :x x :y y)))
+
+(defn collision-handler-executor [scene]
+  (reduce
+   (fn [scene [e1 e2]]
+     (let [c1 (get-in scene [::sc/component-data :collider e1])
+           c2 (get-in scene [::sc/component-data :collider e2])
+           t1 (get-in scene [::sc/component-data :transform e1])
+           t2 (get-in scene [::sc/component-data :transform e2])]
+       (cond
+         (and (:static c1) (not (:static c2))) (assoc-in scene [::sc/component-data :transform e2]
+                                                         (static-collision t1 t2))
+         (and (not (:static c1)) (:static c2)) (assoc-in scene [::sc/component-data :transform e1]
+                                                         (static-collision t2 t1))
+         :else scene)))
+   scene
+   (-> scene ::sc/system-data :Collision)))
+
+(register-system :CollisionHandler
+  (sc/add-system
+   scene
+   (s/mk-system :CollisionHandler [:transform :collider]
+                collision-handler-executor)))
+
+(comment
+  (def test-scene
+    (-> (sc/mk-scene)
+        (sc/add-entity (e/mk-entity [:transform :collider])
+                       [{:x 0 :y 0 :w 10 :h 2}
+                        {:static true}])
+        (sc/add-entity (e/mk-entity [:transform :collider])
+                       [{:x 3 :y 2 :w 3 :h 3}
+                        {:static false}])))
+
+  (require 'clgame.system.collision)
+
+  (collision-handler-executor
+   (clgame.system.collision/collision-system-executor test-scene) )
+
+  )
+
