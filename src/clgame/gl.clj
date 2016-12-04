@@ -72,6 +72,14 @@
           (+ x w2) (+ y h2) 1.0 1.0
           (- x w2) (+ y h2) 0.0 1.0)))
 
+(defn center-rect-uv [{:keys [x y w h u v tw th]}]
+  (let [w2 (/ w 2)
+        h2 (/ h 2)]
+    (quad (- x w2) (- y h2) u        v
+          (+ x w2) (- y h2) (+ u tw) v
+          (+ x w2) (+ y h2) (+ u tw) (+ v th)
+          (- x w2) (+ y h2) u        (+ v th))))
+
 (defn glBindTexture [tid]
   (comment (gl (GL11/glBindTexture GL11/GL_TEXTURE_2D tid))))
 

@@ -21,17 +21,19 @@
         [sw mw sh mh] [(half (:w c1)) (half (:w c2)) (half (:h c1)) (half (:h c2))]
         t (-v m s)
         push-x (+ mw sw (- (abs (:x t))))
-        push-y (+ mh sh (- (abs (:y t))))]
-    (if (<= push-y push-x)
-      (cond
-        (pos? (:y t)) (v2 0 push-y)
-        :else         (v2 0 (- push-y)))
-      (cond
-        (pos? (:x t)) (v2 push-x 0)
-        :else         (v2 (- push-x) 0)))))
+        push-y (+ mh sh (- (abs (:y t))))
+        pushv (if (<= push-y push-x)
+          (cond
+            (pos? (:y t)) (v2 0 push-y)
+            :else         (v2 0 (- push-y)))
+          (cond
+            (pos? (:x t)) (v2 push-x 0)
+            :else         (v2 (- push-x) 0)))]
+    (println pushv)
+    pushv))
 
 (defn static-collision [t1 c1 t2 c2]
-  (let [{:keys [x y]} (+v (v2 (:x t2) (:y t2)) (push-vector [t1 c1] [t2 c2]))]
+  (let [{:keys [x y]} (+v (v2 (:x t2) (:y t2)) (push-vector t1 c1 t2 c2))]
     (assoc t2 :x x :y y)))
 
 (defn collision-handler-executor [scene]
@@ -43,7 +45,7 @@
            t2 (get-in scene [::sc/component-data :transform e2])]
        (cond
          (and (:static c1) (not (:static c2))) (assoc-in scene [::sc/component-data :transform e2]
-                                                         (static-collision t1 c2 t2 c2))
+                                                         (static-collision t1 c1 t2 c2))
          (and (not (:static c1)) (:static c2)) (assoc-in scene [::sc/component-data :transform e1]
                                                          (static-collision t2 c2 t1 c1))
          :else scene)))

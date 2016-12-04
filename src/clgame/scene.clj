@@ -33,6 +33,14 @@
                      (::e/components entity)
                      components-data))))
 
+(defn insert-entity
+  "..."
+  {:style/indent 1}
+  [scene & {:as components}]
+  (let [component-types (into [] (keys components))]
+    (add-entity scene (e/mk-entity component-types)
+                (map components component-types))))
+
 (defn add-system [scene system]
   (update scene ::systems conj system))
 
@@ -83,7 +91,7 @@
 
 
 
-(stest/instrument (stest/instrumentable-syms))
+(stest/unstrument (stest/instrumentable-syms))
 
 
 

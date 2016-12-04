@@ -1,9 +1,10 @@
-(ns clgame.system.default 
+(ns clgame.system.default
   (:require [clojure.spec :as spec]
             [clojure.spec.test :as stest]
             [clgame.component :as c]
             [clgame.entity :as e]
             [clgame.system :as s]
+            [clgame.system.registration :refer [register-system]]
             [clgame.message :as m]
             [clgame.scene :as sc]
             [clojure.set :as set]
@@ -37,4 +38,12 @@
                       entities))
              :else (recur scene entities))))))))
 
-;(stest/unstrument (stest/instrumentable-syms))
+(defn register-default
+  ([system-name components iteration-fn]
+   (register-system system-name
+     (sc/add-system
+      scene
+      (s/mk-system system-name
+                   components
+                   (default-system-executor components iteration-fn))))))
+

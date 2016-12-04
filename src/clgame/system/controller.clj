@@ -2,8 +2,7 @@
   (:require [clgame.system :as s]
             [clgame.scene :as sc]
             [clgame.vector :refer :all]
-            [clgame.system.registration :refer [register-system]]
-            [clgame.system.default :refer [default-system-executor]])
+            [clgame.system.default :refer [register-default]])
   (:import [org.lwjgl.input Keyboard Mouse]))
 
 (defn key? [k]
@@ -19,9 +18,4 @@
                                             (key? Keyboard/KEY_S) -1
                                             :else 0))))})
 
-(register-system :Controller
-  (sc/add-system
-   scene
-   (s/mk-system :Controller
-                [:controller :movement]
-                (default-system-executor [:controller :movement] it))))
+(register-default :Controller [:controller :movement] it)

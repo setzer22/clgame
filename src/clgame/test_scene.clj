@@ -3,9 +3,11 @@
             [clgame.scene :as sc]
             [clgame.entity :as e]
             [clgame.vector :refer :all]
+            [clgame.spritesheet :as spr]
             [clgame.system.debug-keys]
             [clgame.system.renderer]
             [clgame.system.movement]
+            [clgame.system.animation]
             [clgame.system.controller]
             [clgame.system.collision]
             [clgame.system.collision-handler]
@@ -13,49 +15,53 @@
             [clgame.game-loop :as game-loop]
             [clgame.system :as s]))
 
-(defn add-random-entity [scene]
-  (sc/add-entity scene
-                 (e/mk-entity [:transform :sprite :collider])
-                 [{:x (rand-int 800)
-                   :y (rand-int 600)}
-                  {:w 50 :h 50
-                   :texture-id 1}
-                  {:static true
-                   :w 50 :h 50}]))
+(def pacman-spritesheet
+  {::spr/tiles-width 16
+   ::spr/tiles-height 16})
 
-(defn add-moving-entity [scene]
-  (sc/add-entity scene
-                 (e/mk-entity [:transform :sprite :collider :controller :movement])
-                 [{:x (rand-int 800)
-                   :y (rand-int 600)}
-                  {:w 50 :h 50
-                   :texture-id 1}
-                  {:static false
-                   :w 50 :h 50}
-                  {}
-                  {:speed-factor 50
-                   :acceleration-factor 1000
-                   :max-speed 100
-                   :velocity (v2 0 0)
-                   :acceleration (v2 0 0)}
-                  ]))
+(defn add-platform [scene]
+  (sc/insert-entity scene
+    :transform {:x 400.0
+                :y 20.0}
+    :sprite    {:w 800.0 :h 40.0
+                :u 0 :v 0 :tw 1 :th 1
+                :texture-id 1}
+    :collider  {:static true
+                :w 800.0 :h 40.0}))
+
+(defn add-player [scene]
+  (sc/insert-entity scene
+    :transform  {:x (rand-int 800)
+                 :y (rand-int 600)}
+    :sprite     (merge
+                 (spr/get-sprite-uv pacman-spritesheet 0 0)
+                 {:w 50.0 :h 50.0
+                  :texture-id 2})
+    :animation  {:frame-indices [[5 3] [5 4] [5 5]]
+                 :frame-index 0
+                 :frame-time 0.1
+                 :current-frame-time 0.0
+                 :spritesheet pacman-spritesheet}
+    :collider   {:static false
+                :w 50.0 :h 50.0}
+    :controller {}
+    :movement   {:speed-factor 50.0
+                 :acceleration-factor 1000.0
+                 :max-speed 100.0
+                 :velocity (v2 0 0)
+                 :acceleration (v2 0 0)}))
 
 (def test-scene
   (-> (sc/mk-scene)
-      (add-moving-entity)
-      (add-random-entity)
-      (add-random-entity)
-      (add-random-entity)
-      (add-random-entity)
-      (add-random-entity)
-      (add-random-entity)
-      (add-system :Movement)
+      (add-platform)
+      (add-player)
       (add-system :Controller)
+      (add-system :Movement)
       (add-system :Collision)
       (add-system :CollisionHandler)
+      (add-system :Animation)
       (add-system :Renderer)
       (add-system :DebugKeys)))
-
 
 (try (game-loop/run-game test-scene)
      (catch Throwable e (do (gl/destroy-display)
