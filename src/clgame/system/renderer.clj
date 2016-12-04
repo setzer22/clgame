@@ -5,7 +5,7 @@
             [clgame.scene :as sc]
             [clgame.system.default :refer [default-system-executor]]))
 
-(defn render [e-id [{:keys [x y w h] :as transform}, {:keys [texture-id]}] inbox]
+(defn render [e-id [{:keys [x y] :as transform}, {:keys [w h texture-id] :as sprite}] inbox]
   (gl/enable-texture)
   (gl/glBindTexture texture-id)
   (gl/center-rect x y w h)
@@ -15,6 +15,6 @@
   (sc/add-system
    scene
    (s/mk-system  :Renderer
-                [:transform :render]
-                (default-system-executor [:transform :render] render))))
+                [:transform :sprite]
+                (default-system-executor [:transform :sprite] render))))
 
