@@ -21,8 +21,9 @@
 
 (defn add-platform [scene]
   (sc/insert-entity scene
-    :transform {:x 400.0
-                :y 20.0}
+    :transform {:position (v2 400 20)
+                :rotation 0.0
+                :scale (v2 1 1)}
     :sprite    {:w 800.0 :h 40.0
                 :u 0 :v 0 :tw 1 :th 1
                 :texture-id 1}
@@ -31,8 +32,9 @@
 
 (defn add-player [scene]
   (sc/insert-entity scene
-    :transform  {:x (rand-int 800)
-                 :y (rand-int 600)}
+    :transform  {:position (v2 (rand-int 800) (rand-int 600))
+                 :rotation 0.0
+                 :scale (v2 1 1)}
     :sprite     (merge
                  (spr/get-sprite-uv pacman-spritesheet 0 0)
                  {:w 50.0 :h 50.0

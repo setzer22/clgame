@@ -21,7 +21,7 @@
 (def conjv (fnil conj []))
 
 (defn get-collider-info [scene e]
-  [(get-in scene [::sc/component-data :transform e])
+  [(get-in scene [::sc/component-data :transform e :position]) ;TODO Handle rotation and scale
    (get-in scene [::sc/component-data :collider e])])
 
 (defn collision-system-executor [scene]

@@ -21,11 +21,26 @@
     ::messages {}
     ::system-data {}}))
 
+(defn get-component-spec [component-id]
+  (keyword (str "clgame.component." (name component-id)) (name component-id)))
+(defn get-component-ns [component-id]
+  (symbol (str "clgame.component." (name component-id)) ))
+
 (defn add-entity [scene entity components-data]
   (as-> scene s
       (update s ::entities conj entity)
       (reduce (fn [s [component-id component-data]]
-                ;TODO: Component data valiation
+                ;; Component data validation
+                (try
+                  (require (get-component-ns component-id))
+                  (when (spec/invalid? (spec/conform (get-component-spec component-id) component-data))
+                   (throw (Exception. (str "Can't add " entity " to the scene because data for " component-id " has wrong format:\n\n"
+                                           (spec/explain-str (get-component-spec component-id) component-data)))))
+                  (catch Exception e
+                    (if (or (.startsWith (.getMessage e) "Unable to resolve spec")
+                            (.startsWith (.getMessage e) "Could not locate"))
+                      (println "[WARNING]: No validation data for " component-id "\n\n" (.getMessage e)))))
+                ;; Adding the component
                 (let [path [::component-data component-id (::e/id entity)]]
                   (assoc-in s path component-data)))
               s

@@ -1,4 +1,5 @@
-(ns clgame.vector)
+(ns clgame.vector
+  (:require [clojure.spec :as spec]))
 
 (defprotocol Vector2Protocol
   (+v [v1 v2] "Vector addition")
@@ -26,4 +27,9 @@
 
 (defn v2 [x y]
   (Vector2. (float x) (float y)))
+
+(defn v2? [v]
+  (and (contains? v :y) (float? (:y v))
+       (contains? v :x) (float? (:x v))))
+
 

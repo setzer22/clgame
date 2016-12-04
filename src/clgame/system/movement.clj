@@ -14,13 +14,12 @@
       (*v (normalize v) max-length)
       v)))
 
-(defn move [e-id [transform {:keys [velocity acceleration acceleration-factor max-speed] :as movement}] inbox]
-  (let [v (clamp-to-length (+v velocity (*v (*v acceleration delta-time) acceleration-factor))
+(defn move [e-id [{:keys[position] :as transform} {:keys [velocity acceleration acceleration-factor max-speed] :as movement}] inbox]
+  (let [vel (clamp-to-length (+v velocity (*v (*v acceleration delta-time) acceleration-factor))
                            max-speed)
-        px (+ (:x transform) (* delta-time (:x v)))
-        py (+ (:y transform) (* delta-time (:y v)))]
-    {:transform (assoc transform :x px :y py)
-     :movement (assoc movement :velocity v)}))
+        new-pos (+v position (*v vel delta-time))]
+    {:transform (assoc transform :position new-pos)
+     :movement (assoc movement :velocity vel)}))
 
 (register-system :Movement
   (sc/add-system

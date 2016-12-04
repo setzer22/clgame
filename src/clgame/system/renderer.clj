@@ -7,7 +7,7 @@
 (defn render [e-id [transform, {:keys [texture-id] :as sprite}] inbox]
   (gl/enable-texture)
   (gl/glBindTexture texture-id)
-  (gl/center-rect-uv (merge transform sprite))
+  (gl/center-rect-uv (merge (:position transform) sprite))
   {})
 
 (register-default :Renderer [:transform :sprite] render)
