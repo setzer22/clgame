@@ -4,7 +4,8 @@
             [clgame.component :as c]
             [clgame.entity :as e]
             [clgame.system :as s]
-            [clgame.message :as m]))
+            [clgame.message :as m]
+            [clgame.scene :as sc]))
 
 (spec/def ::entities (spec/and vector? ::e/entity))
 (spec/def ::component-data (spec/map-of ::c/type (spec/map-of ::e/id #(not (nil? %)))))
@@ -33,13 +34,16 @@
                 ;; Component data validation
                 (try
                   (require (get-component-ns component-id))
+                  (println
+                   "WAAAAAAAAT "(spec/invalid? (spec/conform (get-component-spec component-id) component-data)))
                   (when (spec/invalid? (spec/conform (get-component-spec component-id) component-data))
                    (throw (Exception. (str "Can't add " entity " to the scene because data for " component-id " has wrong format:\n\n"
                                            (spec/explain-str (get-component-spec component-id) component-data)))))
                   (catch Exception e
                     (if (or (.startsWith (.getMessage e) "Unable to resolve spec")
                             (.startsWith (.getMessage e) "Could not locate"))
-                      (println "[WARNING]: No validation data for " component-id "\n\n" (.getMessage e)))))
+                      (println "[WARNING]: No validation data for " component-id "\n\n" (.getMessage e))
+                      (throw e))))
                 ;; Adding the component
                 (let [path [::component-data component-id (::e/id entity)]]
                   (assoc-in s path component-data)))
@@ -75,14 +79,16 @@
 (defn clear-inbox [scene id]
   (assoc-in scene [::messages id] []))
 
+(defn clear-all-messages [scene]
+  (assoc scene ::messages {}))
+
 (def conjv (fnil conj []))
 
 (defn add-messages [scene messages]
-  (reduce (fn [scene message]
+  #dbg (reduce (fn [scene message]
             (update-in scene [::messages (::m/to message)] conjv message))
-          scene messages))
-
-
+          scene
+          messages))
 
 (comment
 

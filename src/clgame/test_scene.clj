@@ -16,8 +16,8 @@
             [clgame.system :as s]))
 
 (def pacman-spritesheet
-  {::spr/tiles-width 16
-   ::spr/tiles-height 16})
+  {::spr/tiles-width 16.0
+   ::spr/tiles-height 16.0})
 
 (defn add-platform [scene]
   (sc/insert-entity scene
@@ -39,7 +39,9 @@
                  (spr/get-sprite-uv pacman-spritesheet 0 0)
                  {:w 50.0 :h 50.0
                   :texture-id 2})
-    :animation  {:frame-indices [[5 3] [5 4] [5 5]]
+    :animation  {:animations {:walking [[5 3] [5 4] [5 5]]
+                              :idle [[5 3]]}
+                 :current-animation :walking
                  :frame-index 0
                  :frame-time 0.1
                  :current-frame-time 0.0
@@ -52,6 +54,7 @@
                  :max-speed 100.0
                  :velocity (v2 0 0)
                  :acceleration (v2 0 0)}))
+
 
 (def test-scene
   (-> (sc/mk-scene)

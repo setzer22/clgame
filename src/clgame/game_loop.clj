@@ -22,7 +22,7 @@
             __ (doseq [m (sc/get-inbox new-scene ::m/global-msg)]
                  (if (= (::m/type m) :quit)
                    (var-set running false)))
-            new-scene (sc/clear-inbox new-scene ::m/global-msg)]
+            new-scene (sc/clear-all-messages new-scene)]
         (gl/update-display)
         (if @running
           (recur new-scene)
