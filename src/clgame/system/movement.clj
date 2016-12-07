@@ -8,15 +8,19 @@
 
 (def delta-time (/ 1 60)); TODO !!
 
-(defn clamp-to-length [v max-length]
-  (let [l (magnitude v)]
-    (if (> l max-length)
-      (*v (normalize v) max-length)
-      v)))
+(defn clamp-vector [v
+                    {[^float min-x ^float max-x] :x
+                     [^float min-y ^float max-y] :y}]
+  (cond-> v
+    (> (:x v) max-x) (assoc :x max-x)
+    (> (:y v) max-y) (assoc :y max-y)
+    (< (:x v) min-x) (assoc :x min-x)
+    (< (:y v) min-y) (assoc :y min-y)))
 
-(defn move [e-id [{:keys[position] :as transform} {:keys [velocity acceleration acceleration-factor max-speed] :as movement}] inbox]
-  (let [vel (clamp-to-length (+v velocity (*v (*v acceleration delta-time) acceleration-factor))
-                           max-speed)
+(defn move [e-id [{:keys[position] :as transform} {:keys [velocity acceleration speed-clamp] :as movement}] inbox]
+  (let [vel (clamp-vector
+             (+v velocity (*v acceleration delta-time))
+             speed-clamp)
         new-pos (+v position (*v vel delta-time))]
     {:transform (assoc transform :position new-pos)
      :movement (assoc movement :velocity vel)}))

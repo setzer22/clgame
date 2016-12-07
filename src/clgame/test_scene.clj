@@ -48,12 +48,17 @@
                  :spritesheet pacman-spritesheet}
     :collider   {:static false
                 :w 50.0 :h 50.0}
-    :controller {}
-    :movement   {:speed-factor 50.0
-                 :acceleration-factor 1000.0
-                 :max-speed 100.0
-                 :velocity (v2 0 0)
-                 :acceleration (v2 0 0)}))
+    :controller {:jump-speed 300.0
+                 :walk-acceleration 1000.0
+                 :gravity -300.0
+                 :brake-multiplier 0.9}
+    :movement   {:velocity (v2 0 0)
+                 :acceleration (v2 0 0)
+                 :speed-clamp {:x [-150
+                                   150]
+                               :y [-200
+                                   Float/POSITIVE_INFINITY]}}
+    :ground-sensor {:grounded false}))
 
 
 (def test-scene
@@ -64,9 +69,11 @@
       (add-system :Movement)
       (add-system :Collision)
       (add-system :CollisionHandler)
+      (add-system :GroundSensor)
       (add-system :Animation)
       (add-system :Renderer)
-      (add-system :DebugKeys)))
+      (add-system :DebugKeys)
+      ))
 
 (try (game-loop/run-game test-scene)
      (catch Throwable e (do (gl/destroy-display)

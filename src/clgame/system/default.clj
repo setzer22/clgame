@@ -32,11 +32,9 @@
                    response (iteration-fn e-id component-data (sc/get-inbox scene e-id))
                    new-component-data (dissoc response ::m/messages)
                    new-messages (::m/messages response)]
-               (recur (let [s (-> scene
-                                (sc/update-component-data e-id new-component-data)
-                                (sc/add-messages new-messages))]
-                        (when (seq (::m/messages response)) (println s))
-                        s)
+               (recur (-> scene
+                          (sc/update-component-data e-id new-component-data)
+                          (sc/add-messages new-messages))
                       entities))
              :else (recur scene entities))))))))
 

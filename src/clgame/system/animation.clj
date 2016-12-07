@@ -27,7 +27,10 @@
     (spr/get-sprite-uv (:spritesheet animation) i j)))
 
 (defn change-animation [animation new-animation]
-  (assoc animation :current-animation new-animation))
+  (assoc animation
+         :current-animation new-animation
+         :current-frame-time 0.0
+         :frame-index 0))
 
 (defn animation [e-id [sprite animation] inbox]
   (let [maybe-new-state (::m/data (first (filter #(= :change-state (::m/type %)) inbox)))
