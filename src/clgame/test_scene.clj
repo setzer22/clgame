@@ -30,6 +30,17 @@
     :collider  {:static true
                 :w 800.0 :h 40.0}))
 
+(defn add-obstacle [scene x y w h]
+  (sc/insert-entity scene
+    :transform {:position (v2 x y)
+                :rotation 0.0
+                :scale (v2 1 1)}
+    :sprite    {:w w :h h
+                :u 0 :v 0 :tw 1 :th 1
+                :texture-id 1}
+    :collider  {:static true
+                :w w :h h}))
+
 (defn add-player [scene]
   (sc/insert-entity scene
     :transform  {:position (v2 (rand-int 800) (rand-int 600))
@@ -50,8 +61,11 @@
                 :w 50.0 :h 50.0}
     :controller {:jump-speed 300.0
                  :walk-acceleration 1000.0
-                 :gravity -300.0
-                 :brake-multiplier 0.9}
+                 :gravity -600.0
+                 :brake-multiplier 0.9
+                 :jump-state :on-air
+                 :jump-time 0.0
+                 :max-jump-time 0.2}
     :movement   {:velocity (v2 0 0)
                  :acceleration (v2 0 0)
                  :speed-clamp {:x [-150
@@ -65,6 +79,7 @@
   (-> (sc/mk-scene)
       (add-platform)
       (add-player)
+      (add-obstacle 700.0 50.0 150.0 150.0)
       (add-system :Controller)
       (add-system :Movement)
       (add-system :Collision)

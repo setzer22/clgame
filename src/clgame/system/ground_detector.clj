@@ -24,7 +24,7 @@
                (and (entities-with-sensor e2)
                     (> (:y (get-position scene e2)) (:y (get-position scene e1))))
                ,,[(sc/update-component-data scene e2 {:ground-sensor {:grounded true}}) (conj dirty e2)]
-               :else scene))
+               :else [scene dirty]))
            [scene #{}]
            (-> scene ::sc/system-data :Collision))
 
