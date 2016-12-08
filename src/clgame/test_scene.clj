@@ -57,9 +57,13 @@
                               :walk-left  [[1 3] [1 4] [1 5]]
                               :egg-break  [[4 0] [4 1] [4 2] [4 3] [4 4] [4 5]]
                               :eat        [[3 4] [3 5]]
-                              :idle-left       [[1 3]]
-                              :idle-right       [[1 0]]
-                              :walking    [[1 0] [1 1] [1 2]]}
+                              :idle-left  [[1 3]]
+                              :idle-right [[1 0]]
+                              :walking    [[1 0] [1 1] [1 2]]
+                              :jumping-left [[1 0] [0 0] [1 3] [0 3]]
+                              :jumping-right [[1 3] [0 0] [1 0] [0 3]]}
+                 :animation-speed-overrides {:jumping-left 2.0
+                                             :jumping-right 1.5}
                  :current-animation :idle-right
                  :frame-index 0
                  :frame-time 0.1

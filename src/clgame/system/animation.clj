@@ -11,6 +11,8 @@
 (defn pass-time [{:keys [frame-index current-animation current-frame-time frame-time] :as animation} delta-time]
   (let [frame-indices (-> animation :animations current-animation)
         new-frame-time (+ current-frame-time delta-time)
+        frame-time (/ frame-time
+                      (get-in animation [:animation-speed-overrides current-animation] 1.0))
         [elapsed-frames new-frame-time]
         (loop [elapsed-frames 0
                new-frame-time new-frame-time]

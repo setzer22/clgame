@@ -13,7 +13,8 @@
 
 
 (defn it [e-id [{:keys [jump-speed walk-acceleration gravity
-                        brake-multiplier max-jump-time jump-state jump-time]
+                        brake-multiplier max-jump-time jump-state jump-time
+                        last-state last-grounded]
                  :as controller},
                 {:keys [grounded] :as ground-sensor},
                 {:keys [acceleration velocity] :as movement}]
@@ -48,20 +49,49 @@
                             :y (if (and (or (= jump-state :ready)
                                             (= jump-state :jumping))
                                         (key? Keyboard/KEY_SPACE))
-                                 jump-speed (:y velocity)))]
+                                 jump-speed (:y velocity)))
+
+        ax  (-> new-acceleration :x)
+        ax' (-> controller :last-acceleration :x)
+        ax' (if ax' ax' 0) ;TODO: <-
+
+
+        ;; Animation 'hard-coded' state-machine
+        ;; NOTE: If I had to do a lot of those, I'd consider treating them as graphs with
+        ;;       transition arcs like mecanim does.
+        new-state (cond
+                    ;; Just started jumping
+                    (and (= :jumping jump-state) (#{:walk-right :idle-right} last-state)) :jumping-right
+                    (and (= :jumping jump-state) (#{:walk-left :idle-left} last-state))   :jumping-left
+
+                    ;; Keep jumping if we are on air and we were jumping
+                    (and (= :on-air jump-state) (= :jumping-left last-state)) :jumping-left
+                    (and (= :on-air jump-state) (= :jumping-right last-state)) :jumping-right
+
+                    ;; Lands on the ground
+                    (and (= last-grounded false) (= grounded true)
+                         (#{:idle-left :jumping-left :walk-left} last-state))    :idle-left
+                    (and (= last-grounded false) (= grounded true)
+                         (#{:idle-right :jumping-right :walk-right} last-state)) :idle-right
+
+                    ;; Stops from walking
+                    (and (== ax 0) (> ax' 0) (not (#{:jumping-left :jumping-right} last-state))) :idle-right
+                    (and (== ax 0) (< ax' 0) (not (#{:jumping-left :jumping-right} last-state))) :idle-left
+
+                    ;; Starts walking
+                    (and (> ax 0) (or (#{:idle-left :idle-right} last-state) (<= (* ax ax') 0))) :walk-right
+                    (and (< ax 0) (or (#{:idle-left :idle-right} last-state) (<= (* ax ax') 0))) :walk-left
+
+                    ;; Otherwise keep doing the same
+                    :else                                   last-state)]
     {:movement (assoc movement :acceleration new-acceleration
                       :velocity new-velocity)
      :controller (assoc controller :last-acceleration new-acceleration
                         :jump-time jump-time
-                        :jump-state jump-state)
-     ::m/messages (let [ax (-> new-acceleration :x)
-                        ax' (-> controller :last-acceleration :x)
-                        ax' (if ax' ax' 0)]
-                    (cond
-                      (and (== ax 0) (> ax' 0)) [(m/mk-message e-id e-id :idle-right :change-state)]
-                      (and (== ax 0) (< ax' 0)) [(m/mk-message e-id e-id :idle-left :change-state)]
-                      (and (> ax 0) (<= (* ax ax') 0)) [(m/mk-message e-id e-id :walk-right :change-state)]
-                      (and (< ax 0) (<= (* ax ax') 0)) [(m/mk-message e-id e-id :walk-left :change-state)]
-                      :else []))}))
+                        :jump-state jump-state
+                        :last-state new-state
+                        :last-grounded grounded)
+     ::m/messages (if (not= new-state last-state)
+                    [(m/mk-message e-id e-id new-state :change-state)])}))
 
 (register-default :Controller [:controller :ground-sensor :movement] it)

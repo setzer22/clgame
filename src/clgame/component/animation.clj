@@ -4,6 +4,7 @@
 
 (spec/def ::frame-coords (spec/and vector? (spec/tuple int? int?)))
 (spec/def ::animations (spec/map-of keyword? (spec/* ::frame-coords)))
+(spec/def ::animation-speed-overrides (spec/map-of keyword? :conform/float))
 (spec/def ::current-animation keyword?)
 (spec/def ::frame-index int?)
 (spec/def ::frame-time float?)
@@ -14,5 +15,5 @@
    :req-un
    [::frame-index ::frame-time
     ::current-frame-time ::spritesheet
-    ::animations ::current-animation]))
+    ::animations ::current-animation ::animation-speed-overrides]))
 
