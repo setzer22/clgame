@@ -1,7 +1,8 @@
 (ns clgame.gl
   (:import [java.util.concurrent Executors]
            [org.lwjgl.opengl Display DisplayMode GL11 GL12])
-  (:require [clojure.java.io :as io]
+  (:require [clgame.global-config :refer [config]]
+            [clojure.java.io :as io]
             [clgame.texture :as texture]
             [clgame.gl :as gl])
   (:gen-class))
