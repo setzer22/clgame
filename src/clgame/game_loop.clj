@@ -9,6 +9,8 @@
   (gl/glOrtho 0 800 0 600 -1 1)
   (gl/load-texture "/home/josep/Repositories/clgame/resources/pacman.png")
   (gl/load-texture "/home/josep/Repositories/clgame/resources/spritesheet.png")
+  (gl/load-texture "/home/josep/Repositories/clgame/resources/penguin_sprite.png")
+  (gl/load-texture "/home/josep/Repositories/clgame/resources/ice-ground.png")
   (with-local-vars
     [running true]
     (loop [scene scene]

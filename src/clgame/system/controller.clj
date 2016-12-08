@@ -40,8 +40,6 @@
           :else
           ,,[:on-air new-jump-time])
 
-        __ (println jump-state jump-time)
-
         new-velocity (assoc velocity
                             :x (if (<= 0 (* (:x acceleration)
                                             (:x velocity)))
@@ -56,9 +54,14 @@
      :controller (assoc controller :last-acceleration new-acceleration
                         :jump-time jump-time
                         :jump-state jump-state)
-     ::m/messages (if (not= new-acceleration (:last-acceleration controller))
-                    (if (== (:x new-acceleration) 0)
-                      [(m/mk-message e-id e-id :idle :change-state)]
-                      [(m/mk-message e-id e-id :walking :change-state)]))}))
+     ::m/messages (let [ax (-> new-acceleration :x)
+                        ax' (-> controller :last-acceleration :x)
+                        ax' (if ax' ax' 0)]
+                    (cond
+                      (and (== ax 0) (> ax' 0)) [(m/mk-message e-id e-id :idle-right :change-state)]
+                      (and (== ax 0) (< ax' 0)) [(m/mk-message e-id e-id :idle-left :change-state)]
+                      (and (> ax 0) (<= (* ax ax') 0)) [(m/mk-message e-id e-id :walk-right :change-state)]
+                      (and (< ax 0) (<= (* ax ax') 0)) [(m/mk-message e-id e-id :walk-left :change-state)]
+                      :else []))}))
 
 (register-default :Controller [:controller :ground-sensor :movement] it)
