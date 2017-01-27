@@ -3,7 +3,8 @@
             [clgame.system :as s]
             [clgame.scene :as sc]
             [clgame.message :as m]
-            [clgame.gl :as gl]))
+            [clgame.gl :as gl]
+            [clgame.font :as fnt]))
 
 (defn run-game [scene]
   (gl/init-display (-> config :window :width) (-> config :window :height))
@@ -12,6 +13,8 @@
   (gl/load-texture "/home/josep/Repositories/clgame/resources/spritesheet.png")
   (gl/load-texture "/home/josep/Repositories/clgame/resources/penguin_sprite.png")
   (gl/load-texture "/home/josep/Repositories/clgame/resources/ice-ground.png")
+  (gl/load-texture "/home/josep/Repositories/clgame/resources/hand.png")
+  (fnt/init-font)
   (with-local-vars
     [running true]
     (loop [scene scene]

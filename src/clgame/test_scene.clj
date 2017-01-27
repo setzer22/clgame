@@ -10,6 +10,7 @@
             [clgame.system.animation]
             [clgame.system.controller]
             [clgame.system.ground-detector]
+            [clgame.system.hand-motion]
             [clgame.system.collision]
             [clgame.system.collision-handler]
             [clgame.system.registration :refer [add-system]]
@@ -19,6 +20,10 @@
 (def pacman-spritesheet
   {::spr/tiles-width 7.0
    ::spr/tiles-height 7.0})
+
+(def hand-spritesheet
+  {::spr/tiles-width 1.0
+   ::spr/tiles-height 2.0})
 
 (defn add-platform [scene]
   (sc/insert-entity scene
@@ -41,6 +46,29 @@
                 :texture-id 4}
     :collider  {:static true
                 :w w :h h}))
+
+(defn add-hand [scene x y w h]
+  (sc/insert-entity scene
+    :transform {:position (v2 x y)
+                :rotation 0.0
+                :scale (v2 1 1)}
+    :sprite    (merge
+                (spr/get-sprite-uv hand-spritesheet 1 0)
+                {:w w :h h
+                 :texture-id 5})
+    :collider  {:static true
+                :w w :h h}
+    :hand-motion {:t 0.0
+                  :amplitude 10.0
+                  :speed 5.0}
+    :hand-ai {}
+    :movement {:velocity (v2 0 0)
+               :acceleration (v2 0 0)
+               :speed-clamp {:x [-150
+                                 150]
+                             :y [-200
+                                 Float/POSITIVE_INFINITY]}}))
+
 
 (defn add-player [scene]
   (sc/insert-entity scene
@@ -91,9 +119,11 @@
   (-> (sc/mk-scene)
       (add-platform)
       (add-player)
+      (add-hand 400 70 50.0 50.0)
       (add-obstacle 700.0 50.0 150.0 150.0)
       (add-system :Controller)
       (add-system :Movement)
+      (add-system :HandMotion)
       (add-system :Collision)
       (add-system :CollisionHandler)
       (add-system :GroundSensor)

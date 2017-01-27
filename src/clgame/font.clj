@@ -24,8 +24,8 @@
 
 (defn init-font []
   (let [awt-font (java.awt.Font. "Sans" java.awt.Font/BOLD 24)
-        slick-font (gl (org.newdawn.slick.TrueTypeFont. font true))]
-    (alter-var-root font (constantly slick-font))))
+        slick-font (gl (org.newdawn.slick.TrueTypeFont. awt-font true))]
+    (alter-var-root #'font (constantly slick-font))))
 
 (defn draw-string [x y string]
   (gl (GL11/glEnable GL11/GL_TEXTURE_2D)
