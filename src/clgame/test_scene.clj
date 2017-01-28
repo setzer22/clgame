@@ -1,5 +1,6 @@
 (ns clgame.test-scene
-  (:require [clgame.gl :as gl]
+  (:require [clgame.utils]
+            [clgame.gl :as gl]
             [clgame.scene :as sc]
             [clgame.entity :as e]
             [clgame.vector :refer :all]

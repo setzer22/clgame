@@ -4,9 +4,10 @@
             [clgame.scene :as sc]
             [clgame.message :as m]
             [clgame.gl :as gl]
-            [clgame.font :as fnt]))
+            [clgame.font :as fnt]
+            [clgame.macros.specdefn :refer [defn']]))
 
-(defn run-game [scene]
+(defn' run-game [scene :> ::sc/scene]
   (gl/init-display (-> config :window :width) (-> config :window :height))
   (gl/glOrtho 0 (-> config :screen :width) 0 (-> config :screen :height) -1 1)
   (gl/load-texture "/home/josep/Repositories/clgame/resources/pacman.png")

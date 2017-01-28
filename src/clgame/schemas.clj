@@ -1,2 +1,0 @@
-(ns clgame.schemas)
-

@@ -1,19 +1,17 @@
 (ns clgame.component.animation
   (:require [clgame.spritesheet :as spr]
-            [clojure.spec :as spec]))
+            [clojure.spec :as spec]
+            [clgame.macros.defcomponent :refer [defcomponent]]))
 
-(spec/def ::frame-coords (spec/and vector? (spec/tuple int? int?)))
-(spec/def ::animations (spec/map-of keyword? (spec/* ::frame-coords)))
-(spec/def ::animation-speed-overrides (spec/map-of keyword? :conform/float))
-(spec/def ::current-animation keyword?)
-(spec/def ::frame-index int?)
-(spec/def ::frame-time float?)
-(spec/def ::current-frame-time float?)
-(spec/def ::spritesheet ::spr/spritesheet)
-(spec/def ::animation
-  (spec/keys
-   :req-un
-   [::frame-index ::frame-time
-    ::current-frame-time ::spritesheet
-    ::animations ::current-animation ::animation-speed-overrides]))
+(defcomponent :animation
+  :animations   :> (spec/map-of keyword? (spec/* ::frame-coords))
+
+  :animation-speed-overrides :> (spec/map-of keyword? :conform/float)
+
+  :current-animation  :> keyword?
+  :frame-index        :> int?
+  :frame-time         :> float?
+  :current-frame-time :> float?
+  :spritesheet        :> ::spr/spritesheet)
+
 

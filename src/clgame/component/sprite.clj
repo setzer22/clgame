@@ -1,10 +1,11 @@
 (ns clgame.component.sprite
-  (:require [clojure.spec :as spec]))
+  (:require [clojure.spec :as spec]
+            [clgame.macros.defcomponent :refer [defcomponent]]))
 
-(spec/def ::tw :conform/float)
-(spec/def ::th :conform/float)
-(spec/def ::u :conform/float)
-(spec/def ::v :conform/float)
-(spec/def ::w :conform/float)
-(spec/def ::h :conform/float)
-(spec/def ::sprite (spec/keys :req-un [::tw ::th ::u ::v ::w ::h]))
+(defcomponent :sprite
+  :tw :> :conform/float
+  :th :> :conform/float
+  :u  :> :conform/float
+  :v  :> :conform/float
+  :w  :> :conform/float
+  :h  :> :conform/float)

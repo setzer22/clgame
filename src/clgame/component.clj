@@ -1,16 +1,13 @@
 (ns clgame.component
   (:require [clojure.spec :as spec]
-            [clojure.spec.test :as stest]))
+            [clojure.spec.test :as stest]
+            [clgame.macros.specdefn :refer [defn']]))
 
 (spec/def ::type keyword?)
 (spec/def ::schema (spec/and vector? (spec/* keyword?)))
 (spec/def ::component (spec/keys :req [::type ::schema]))
 
-(spec/fdef mk-component
-           :args (spec/cat :type ::type :schema ::schema)
-           :ret ::component)
-(defn mk-component [type schema]
+(defn' mk-component [type :> ::type schema :> ::schema] -> ::component
   {::type type
    ::schema schema})
 
-(stest/instrument (stest/instrumentable-syms))

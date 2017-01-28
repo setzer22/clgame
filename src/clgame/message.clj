@@ -2,8 +2,10 @@
   (:require [clgame.entity :as e]
             [clojure.spec :as spec]))
 
-(spec/def ::from ::e/id)
-(spec/def ::to ::e/id)
+(spec/def ::id (spec/or :to-entity ::e/id
+                        :to-engine #(= % ::global-msg)))
+(spec/def ::from ::id)
+(spec/def ::to ::id)
 (spec/def ::data any?)
 (spec/def ::type keyword?)
 (spec/def ::message (spec/keys :req [::from ::to ::data ::type]))

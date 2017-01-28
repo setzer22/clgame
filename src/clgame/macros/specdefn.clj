@@ -1,10 +1,7 @@
-(ns clgame.macros
+(ns clgame.macros.specdefn
   (:require [clojure.spec :as spec]
             [clojure.spec.test :as stest]
-            [spectrum.check :as check]))
-
-(defn is [x]
-  #(= x %))
+            [clgame.macros.common :refer :all]))
 
 (spec/def ::namespaced-keyword
   (spec/and keyword? namespace))
@@ -36,11 +33,6 @@
 ;;(spec/valid? ::lvalue 'x)
 
 
-(defn spec-form? [x]
-  (or (symbol? x) ;; Function ref
-      (list? x) ;; Lambda predicate
-      (keyword? x)
-      ))
 
 (spec/def ::defn-args
   (spec/cat :args (spec/spec (spec/* (spec/cat :name (fn is-lvalue [x] (spec/valid? ::lvalue x))
@@ -84,18 +76,6 @@
 ;;(extract-or-generate-alias '[x y])
 ;;(extract-or-generate-alias 'x)
 
-(defn maybe-conform [spec val msg]
-  ;; FIXME @Hack: When clojure.spec fixes the bug about explain-str failing
-  ;;   to explain function predicates, remove the (spec/and any? ...) wrap.
-  (let [conformed (spec/conform (spec/and any? spec) val)]
-    (if (spec/invalid? conformed)
-      (throw (Exception. (str msg "\n\n**SPEC INFO**:\n" (spec/explain-str spec val))))
-      conformed)))
-
-;(maybe-conform ::defn-args '([x :> int?, y :> #(= "hello" %)]) "Error in the argument form.")
-;(maybe-conform ::defn-docstring '("wat" (* 2 x)) "Error")
-;(maybe-conform ::defn-return '((* x 2)) "Error in the argument form.")
-
 (defmacro defn' [name & rest]
   (let [{:keys [args rest]} (maybe-conform ::defn-args rest "Syntax error: Invalid argument form.")
         {:keys [docstring rest]} (maybe-conform ::defn-docstring rest "Syntax error: Invalid docstring.")
@@ -110,10 +90,10 @@
          ~(mapv :lvalue extracted-aliases)
          (do ~@(for [[{{spec :spec} :spec} {:keys [lvalue alias generated?]}] (map vector args extracted-aliases)
                      :when spec]
-                 `(maybe-conform (spec/and ~spec) ~alias (str "Error in argument " '~(if generated? lvalue alias))))
+                 `(maybe-conform (spec/and ~spec) ~alias (str "Error in argument " '~(if generated? lvalue alias) " of function " '~name":")))
              (let [ret# (do ~@body)
                    ret-spec?# ~(if (:spec return) true false)]
-               (when ret-spec?# (maybe-conform (spec/and ~(:spec return)) ret# (str "Error in return value:")))
+               (when ret-spec?# (maybe-conform (spec/and ~(:spec return)) ret# (str "Error in return value of function " '~name ":")))
                ret#)))
 
        ;;Function spec

@@ -34,5 +34,3 @@
                         (sc/add-messages new-messages))
                     entities))
            :else (recur scene entities)))))))
-
-(stest/unstrument (stest/instrumentable-syms))
