@@ -34,7 +34,8 @@
     :sprite    {:w 800.0 :h 40.0
                 :u 0 :v 0 :tw 1 :th 1
                 :texture-id 4}
-    :collider  {:static true
+    :collider  {:tags #{:floor}
+                :static true
                 :w 800.0 :h 40.0}))
 
 (defn add-obstacle [scene x y w h]
@@ -45,7 +46,8 @@
     :sprite    {:w w :h h
                 :u 0 :v 0 :tw 1 :th 1
                 :texture-id 4}
-    :collider  {:static true
+    :collider  {:tags #{:floor}
+                :static true
                 :w w :h h}))
 
 (defn add-hand [scene x y w h]
@@ -58,6 +60,7 @@
                 {:w w :h h
                  :texture-id 5})
     :collider  {:static true
+                :tags #{:enemy}
                 :w w :h h}
     :hand-motion {:t 0.0
                   :amplitude 10.0
@@ -69,7 +72,6 @@
                                  150]
                              :y [-200
                                  Float/POSITIVE_INFINITY]}}))
-
 
 (defn add-player [scene]
   (sc/insert-entity scene
@@ -98,7 +100,8 @@
                  :frame-time 0.1
                  :current-frame-time 0.0
                  :spritesheet pacman-spritesheet}
-    :collider   {:static false
+    :collider   {:tags #{:player}
+                 :static false
                 :w 50.0 :h 50.0}
     :controller {:jump-speed 300.0
                  :walk-acceleration 1000.0
@@ -106,7 +109,8 @@
                  :brake-multiplier 0.9
                  :jump-state :on-air
                  :jump-time 0.0
-                 :max-jump-time 0.2}
+                 :max-jump-time 0.2
+                 :has-control? true}
     :movement   {:velocity (v2 0 0)
                  :acceleration (v2 0 0)
                  :speed-clamp {:x [-150
@@ -114,7 +118,6 @@
                                :y [-200
                                    Float/POSITIVE_INFINITY]}}
     :ground-sensor {:grounded false}))
-
 
 (def test-scene
   (-> (sc/mk-scene)

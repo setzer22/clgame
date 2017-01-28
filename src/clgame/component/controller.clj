@@ -9,4 +9,5 @@
   :brake-multiplier  :> float?
   :max-jump-time     :> float?
   :jump-state        :> keyword?
-  :jump-time         :> float?)
+  :jump-time         :> float?
+  :has-control?      :> boolean?)

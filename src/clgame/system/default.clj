@@ -19,7 +19,7 @@
   ([components iteration-fn] (default-system-executor components identity iteration-fn identity))
   ([components pre-fn iteration-fn post-fn]
    ;;TODO: Check which entities are affected by the subsystem
-   #dbg (let [component-set (set components)]
+   (let [component-set (set components)]
      (fn [scene]
        (loop [scene (pre-fn scene)
               [e & entities] (::sc/entities scene)]

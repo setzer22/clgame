@@ -14,27 +14,35 @@
 
 (defn it [e-id [{:keys [jump-speed walk-acceleration gravity
                         brake-multiplier max-jump-time jump-state jump-time
-                        last-state last-grounded]
+                        last-state last-grounded has-control?]
                  :as controller},
                 {:keys [grounded] :as ground-sensor},
                 {:keys [acceleration velocity] :as movement}]
           inbox]
-  (let [new-acceleration
+  (let [;; Input query at the beginning
+        ;; @Cleanup
+        left-key? (if has-control? (key? Keyboard/KEY_A) false)
+        up-key? (if has-control? (key? Keyboard/KEY_W) false)
+        down-key? (if has-control? (key? Keyboard/KEY_S) false)
+        right-key? (if has-control? (key? Keyboard/KEY_D) false)
+        jump-key? (if has-control? (key? Keyboard/KEY_SPACE) false)
+
+        new-acceleration
         (v2 (* walk-acceleration
-               (cond (key? Keyboard/KEY_D) 1
-                   (key? Keyboard/KEY_A) -1
-                   :else 0))
+               (cond right-key? 1
+                     left-key? -1
+                     :else 0))
             gravity)
 
         new-jump-time (+ jump-time delta-time)
 
         [jump-state jump-time]
         (cond
-          (and (key? Keyboard/KEY_SPACE) (or (= :jumping jump-state)
+          (and jump-key? (or (= :jumping jump-state)
                                              (= :ready jump-state))
                (< new-jump-time max-jump-time))
           ,,[:jumping new-jump-time]
-          (and (key? Keyboard/KEY_SPACE) (> jump-time max-jump-time))
+          (and jump-key? (> jump-time max-jump-time))
           ,,[:on-air new-jump-time]
           grounded
           ,,[:ready 0]
@@ -48,7 +56,7 @@
                                  (:x velocity))
                             :y (if (and (or (= jump-state :ready)
                                             (= jump-state :jumping))
-                                        (key? Keyboard/KEY_SPACE))
+                                        jump-key?)
                                  jump-speed (:y velocity)))
 
         ax  (-> new-acceleration :x)
