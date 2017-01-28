@@ -108,10 +108,6 @@
 ;; - Support for rest args typing
 ;; - Support for defn metadata
 
-(defn pprintexpand
-  [form]
-  (binding [clojure.pprint/*print-suppress-namespaces* true]
-    (clojure.pprint/pprint (macroexpand-1 form))))
 
 (comment
   "Pseudo test suite"

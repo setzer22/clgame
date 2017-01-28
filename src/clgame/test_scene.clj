@@ -27,7 +27,7 @@
    ::spr/tiles-height 2.0})
 
 (defn add-platform [scene]
-  (sc/insert-entity scene
+  (sc/insert-entity scene "platform"
     :transform {:position (v2 400 20)
                 :rotation 0.0
                 :scale (v2 1 1)}
@@ -39,7 +39,7 @@
                 :w 800.0 :h 40.0}))
 
 (defn add-obstacle [scene x y w h]
-  (sc/insert-entity scene
+  (sc/insert-entity scene (str "obstacle-" (mod (hash [x y w h]) 10000))
     :transform {:position (v2 x y)
                 :rotation 0.0
                 :scale (v2 1 1)}
@@ -51,7 +51,7 @@
                 :w w :h h}))
 
 (defn add-hand [scene x y w h]
-  (sc/insert-entity scene
+  (sc/insert-entity scene (str "enemy-" (mod (hash [x y w h]) 1000))
     :transform {:position (v2 x y)
                 :rotation 0.0
                 :scale (v2 1 1)}
@@ -74,7 +74,7 @@
                                  Float/POSITIVE_INFINITY]}}))
 
 (defn add-player [scene]
-  (sc/insert-entity scene
+  (sc/insert-entity scene "player"
     :transform  {:position (v2 (rand-int 800) (rand-int 600))
                  :rotation 0.0
                  :scale (v2 1 1)}

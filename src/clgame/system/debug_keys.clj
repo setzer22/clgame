@@ -14,7 +14,7 @@
 
 (register-system :DebugKeys
   (-> scene
-      (sc/add-entity (e/mk-entity [:debug-keys])
+      (sc/add-entity (e/mk-entity "debug-keys-entity" [:debug-keys])
                      [nil])
       (sc/add-system
        (s/mk-system :DebugKeys

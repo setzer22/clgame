@@ -4,17 +4,17 @@
             [clgame.component :as c]
             [clgame.macros.specdefn :refer [defn']]))
 
-(defonce entity-id-generator
-  (let [counter (atom -1)]
-    (fn []
-      (swap! counter inc)
-      (str "entity-"@counter))))
+;(defonce entity-id-generator
+  ;(let [counter (atom -1)]
+    ;(fn []
+      ;(swap! counter inc)
+      ;(str "entity-"@counter))))
 
 (spec/def ::id string?)
 (spec/def ::components (spec/spec (spec/* ::c/type)))
 (spec/def ::entity (spec/keys :req [::id ::components]))
 
-(defn' mk-entity [component-types :> ::components] -> ::entity
-  {::id (entity-id-generator)
+(defn' mk-entity [id :> string?, component-types :> ::components] -> ::entity
+  {::id id ;(entity-id-generator)
    ::components component-types})
 

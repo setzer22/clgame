@@ -16,7 +16,6 @@
      (fn [scene image]
        (io/file image-folder (str (:imageName image) ".png")); TODO: Hardcoded format
        (-> scene
-           
            (sc/insert-entity scene
              :transform (merge {:x 0 :y 0} (select-keys image [:x :y]))
              :sprite {:w :h})

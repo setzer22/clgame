@@ -1,0 +1,5 @@
+GLOBAL TODO LIST:
+
+- Evaluate the possibility of having a global collision executor and have
+  "subsystems" that hook to it with specific checks.
+- Reimplement ground_detector using collision_executor to test its correctnes and cleanup code.

@@ -55,20 +55,3 @@
    (s/mk-system :CollisionHandler [:transform :collider]
                 collision-handler-executor)))
 
-(comment
-  (def test-scene ;TODO: Outdated
-    (-> (sc/mk-scene)
-        (sc/add-entity (e/mk-entity [:transform :collider])
-                       [{:x 0 :y 0 :w 10 :h 2}
-                        {:static true}])
-        (sc/add-entity (e/mk-entity [:transform :collider])
-                       [{:x 3 :y 2 :w 3 :h 3}
-                        {:static false}])))
-
-  (require 'clgame.system.collision)
-
-  (collision-handler-executor
-   (clgame.system.collision/collision-system-executor test-scene) )
-
-  )
-

@@ -5,5 +5,5 @@
 (defcomponent :collider
   :static :> boolean?
   :tags   :> (spec/and set? (spec/* keyword?))
-  :w      :> float?
-  :h      :> float)
+  :w      :> :conform/float
+  :h      :> :conform/float)

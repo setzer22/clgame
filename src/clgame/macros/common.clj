@@ -14,3 +14,8 @@
     (if (spec/invalid? conformed)
       (throw (Exception. (str msg "\n\n**SPEC INFO**:\n" (spec/explain-str spec val))))
       conformed)))
+
+(defn pprintexpand
+  [form]
+  (binding [clojure.pprint/*print-suppress-namespaces* true]
+    (clojure.pprint/pprint (macroexpand-1 form))))

@@ -54,9 +54,9 @@
 (defn insert-entity
   "..."
   {:style/indent 1}
-  [scene & {:as components}]
+  [scene id & {:as components}]
   (let [component-types (into [] (keys components))]
-    (add-entity scene (e/mk-entity component-types)
+    (add-entity scene (e/mk-entity id component-types)
                 (map components component-types))))
 
 (defn' add-system [scene :> ::scene system :> ::s/system] -> ::scene
@@ -93,7 +93,7 @@
 (comment
 
   (def test-scene (-> (mk-scene)
-                      (add-entity (e/mk-entity [:transform :render])
+                      (add-entity (e/mk-entity "test" [:transform :render])
                                   [{:x 1 :y 1}
                                    {}])))
 

@@ -8,6 +8,8 @@
             [clgame.message :as m]
             [clgame.scene :as sc]
             [clojure.set :as set]
+            [clgame.vector :refer :all]
+            [clojure.inspector]
             [clgame.message :as m]))
 
 (defn get-collider [scene id]
@@ -32,7 +34,7 @@
          (fn wat [scene [e1 e2]]
            (let [e1-tags (:tags (get-collider scene e1))
                  e2-tags (:tags (get-collider scene e2))
-                 [new-data-e1 new-data-e2]
+                 [new-data-e1 new-data-e2 :as result]
                  (cond
                    (and (set/subset? tags1 e1-tags)
                         (set/subset? tags2 e2-tags))
@@ -43,14 +45,52 @@
                    (handle-collision-fn (get-data scene components e1)
                                         (get-data scene components e2))
                    :else nil)]
-             (-> scene
-                 (sc/update-component-data e1 new-data-e1)
-                 (sc/update-component-data e2 new-data-e2))))
+             (if result
+               (-> scene
+                  (sc/update-component-data e1 new-data-e1)
+                  (sc/update-component-data e2 new-data-e2))
+               scene)))
          scene
          collisions)))))
 
-((collisions-system-executor #{:player} #{:enemy} [:transform]
-                             (fn [t1 t2]
-                               {}))
- clgame.test-scene/test-scene)
+(defn register-collision-executor
+  [system-name tags1 tags2 components function]
+  (register-system system-name
+    (sc/add-system
+     scene
+     (s/mk-system system-name
+                  components
+                  (collisions-system-executor tags1 tags2 components function)))))
+
+(comment
+  (def test-scene
+    (-> (sc/mk-scene)
+        (sc/insert-entity "player"
+          :transform {:position (v2 10 10)
+                      :rotation 0.0
+                      :scale (v2 1 1)}
+          :collider {:tags #{:player}
+                     :static true
+                     :w 1 :h 1})
+
+        (sc/insert-entity "enemy"
+          :transform {:position (v2 10 10)
+                      :rotation 0.0
+                      :scale (v2 1 1)}
+          :collider {:tags #{:enemy}
+                     :static true
+                     :w 0.5 :h 0.5})))
+
+  (def executor (collisions-system-executor #{:player} #{:enemy} [:transform]
+                                            (fn [t1 t2]
+                                              (clojure.java.shell/sh "notify-send" "wat")
+                                              [{} {}])))
+
+  (-> test-scene
+      clgame.system.collision/collision-system-executor
+      executor) ;; A notification should be sent
+ )
+
+
+
 

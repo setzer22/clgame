@@ -1,5 +1,6 @@
 (ns clgame.system.ground-detector
   (:require [clgame.system.registration :refer [register-system]]
+            [clgame.system.forall-collisions :refer [register-collision-executor]]
             [clgame.scene :as sc]
             [clgame.entity :as e]
             [clgame.system :as s]
@@ -34,6 +35,7 @@
                        scene
                        (set/difference entities-with-sensor dirty))]
       clean-scene)))
+
 
 (register-system :GroundSensor
   (sc/add-system

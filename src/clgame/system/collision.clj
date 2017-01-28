@@ -44,9 +44,9 @@
 (comment "TEST"
          (def test-collision-scene ;TODO: Outdated
            (-> (sc/mk-scene)
-               (sc/add-entity (e/mk-entity [:transform :collider]) [{:x 0 :y 0 :w 10 :h 10} {:static true}])
-               (sc/add-entity (e/mk-entity [:transform :collider]) [{:x 0 :y 0 :w 3 :h 3} {:static true}])
-               (sc/add-entity (e/mk-entity [:transform :collider]) [{:x 100 :y 100 :w 3 :h 3} {:static false}])))
+               (sc/add-entity (e/mk-entity "e1" [:transform :collider]) [{:x 0 :y 0 :w 10 :h 10} {:static true}])
+               (sc/add-entity (e/mk-entity "e2" [:transform :collider]) [{:x 0 :y 0 :w 3 :h 3} {:static true}])
+               (sc/add-entity (e/mk-entity "e3" [:transform :collider]) [{:x 100 :y 100 :w 3 :h 3} {:static false}])))
 
          (::sc/system-data (collision-system-executor test-collision-scene))
 
