@@ -26,14 +26,20 @@
 
 (defn collision-system-executor [scene]
   (let [component-set #{:transform :collider}
-        collidable-entities (map ::e/id (filter #(set/subset? component-set (set (::e/components %))) (::sc/entities scene)))
-        scene (assoc-in scene [::sc/system-data :Collision] [])]
-    (reduce (fn [scene [e1 e2]] (if (entity-intersect? (get-collider-info scene e1)
-                                                       (get-collider-info scene e2))
-                                  (update-in scene [::sc/system-data :Collision] conjv [e1 e2])
-                                  scene))
-            scene
-            (combinatorics/combinations collidable-entities 2))))
+        collidable-entities (into []
+                             (comp (filter #(set/subset? component-set (set (::e/components %))))
+                                   (map ::e/id))
+                             (::sc/entities scene))
+        collisions (persistent!
+                    (reduce
+                     (fn [collisions [e1 e2]]
+                       (if (entity-intersect? (get-collider-info scene e1)
+                                              (get-collider-info scene e2))
+                         (conj! collisions [e1 e2])
+                         collisions))
+                     (transient [])
+                     (combinatorics/combinations collidable-entities 2)))]
+    (assoc-in scene [::sc/system-data :Collision] collisions)))
 
 (register-system :Collision
   (sc/add-system
