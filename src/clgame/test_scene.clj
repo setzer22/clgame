@@ -112,7 +112,9 @@
                  :jump-time 0.0
                  :max-jump-time 0.2
                  :has-control? true
-                 :is-hit? false}
+                 :is-hit? false
+                 :hit-timer 0
+                 :max-hit-timer 2}
     :movement   {:velocity (v2 0 0)
                  :acceleration (v2 0 0)
                  :speed-clamp {:x [-150

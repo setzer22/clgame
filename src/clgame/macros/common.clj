@@ -19,3 +19,8 @@
   [form]
   (binding [clojure.pprint/*print-suppress-namespaces* true]
     (clojure.pprint/pprint (macroexpand-1 form))))
+
+(defn pprintexpand-all
+  [form]
+  (binding [clojure.pprint/*print-suppress-namespaces* true]
+    (clojure.pprint/pprint (macroexpand (macroexpand-1 form)))))

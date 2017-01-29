@@ -8,7 +8,8 @@
                  [slick-util/slick-util  "1.0.0"]
                  [com.rpl/specter "0.9.2"]
                  [org.clojure/math.combinatorics "0.1.3"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [org.clojure/tools.namespace "0.2.11"]]
   :jvm-opts [~(str "-Djava.library.path=native/linux:" (System/getProperty "java.library.path"))]
   :main ^:skip-aot clgame.core
   :target-path "target/%s"

@@ -6,7 +6,8 @@
             [clgame.system :as s]
             [clgame.macros.common :refer [maybe-conform]]
             [clgame.system.registration :refer [register-system]]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [clojure.tools.namespace.find :as ns-find]))
 
 ;; The collision logic system does nothing by itself, and relies on multiple
 ;; subsystems that hook into it. For example, a player_damage subsystem might
@@ -130,6 +131,13 @@
                   scene
                   (s/mk-system :CollisionLogic [:collider]
                                collision-logic-system-executor)))
+
+;; Automatically load all collision hooks when this ns is loaded.
+;; This populates the hooks array with all declared collision hooks.
+(let [all-hook-ns (filter #(.startsWith (name %) "clgame.collision-hooks")
+                                (ns-find/find-namespaces-in-dir (java.io.File. ".")))]
+  (doseq [hook-ns all-hook-ns]
+    (require hook-ns)))
 
 ;; ----------------------------------------------------------------------------
 ;;                                     TEST
