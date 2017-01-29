@@ -10,4 +10,5 @@
   :max-jump-time     :> float?
   :jump-state        :> keyword?
   :jump-time         :> float?
-  :has-control?      :> boolean?)
+  :has-control?      :> boolean?
+  :is-hit?           :> boolean?)

@@ -14,6 +14,7 @@
             [clgame.system.hand-motion]
             [clgame.system.collision]
             [clgame.system.collision-handler]
+            [clgame.system.collision-logic]
             [clgame.system.registration :refer [add-system]]
             [clgame.game-loop :as game-loop]
             [clgame.system :as s]))
@@ -110,7 +111,8 @@
                  :jump-state :on-air
                  :jump-time 0.0
                  :max-jump-time 0.2
-                 :has-control? true}
+                 :has-control? true
+                 :is-hit? false}
     :movement   {:velocity (v2 0 0)
                  :acceleration (v2 0 0)
                  :speed-clamp {:x [-150
@@ -130,6 +132,7 @@
       (add-system :HandMotion)
       (add-system :Collision)
       (add-system :CollisionHandler)
+      (add-system :CollisionLogic)
       (add-system :GroundSensor)
       (add-system :Animation)
       (add-system :Renderer)
