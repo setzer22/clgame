@@ -51,11 +51,12 @@
 
         new-jump-state
         (state-machine jump-state
-          :ready   -- grounded   -> :ready
+          :ready   -- grounded    -> :ready
           :ready   -- jump-key?   -> :jumping
-          :jumping -- still-time? -> :jumping
+          :ready   -- :else       -> :on-air
+          :jumping -- (and jump-key? still-time?) -> :jumping
           :jumping -- :else       -> :on-air
-          :on-air  -- grounded   -> :ready
+          :on-air  -- grounded    -> :ready
           :on-air  -- :else       -> :on-air)
 
         jump-time (if (= new-jump-state :ready) 0 new-jump-time)
@@ -76,31 +77,24 @@
         ax' (-> controller :last-acceleration :x)
         ax' (if ax' ax' 0)
 
-        new-state (cond
-                    ;; Just started jumping
-                    (and (= :jumping jump-state) (#{:walk-right :idle-right} last-state)) :jumping-right
-                    (and (= :jumping jump-state) (#{:walk-left :idle-left} last-state))   :jumping-left
+        new-state
+        (state-machine last-state
+          ;; Started Jumping
+          [:walk-right :idle-right] -- (= :jumping jump-state) -> :jumping-right
+          [:walk-left :idle-left] -- (= :jumping jump-state) -> :jumping-left
 
-                    ;; Keep jumping if we are on air and we were jumping
-                    (and (= :on-air jump-state) (= :jumping-left last-state))  :jumping-left
-                    (and (= :on-air jump-state) (= :jumping-right last-state)) :jumping-right
+          ;; Landing
+          [:idle-left :jumping-left :walk-left] -- (and (not last-grounded) grounded) -> :idle-left
+          [:idle-right :jumping-right :walk-right] -- (and (not last-grounded) grounded) -> :idle-right
 
-                    ;; Lands on the ground
-                    (and (= last-grounded false) (= grounded true)
-                         (#{:idle-left :jumping-left :walk-left} last-state))    :idle-left
-                    (and (= last-grounded false) (= grounded true)
-                         (#{:idle-right :jumping-right :walk-right} last-state)) :idle-right
+          ;; Stop from walking
+          [:idle-left :walk-left :idle-right :walk-right] -- (and (== ax 0) (> ax' 0)) -> :idle-right
+          [:idle-left :walk-left :idle-right :walk-right] -- (and (== ax 0) (< ax' 0)) -> :idle-left
 
-                    ;; Stops from walking
-                    (and (== ax 0) (> ax' 0) (not (#{:jumping-left :jumping-right} last-state))) :idle-right
-                    (and (== ax 0) (< ax' 0) (not (#{:jumping-left :jumping-right} last-state))) :idle-left
+          ;; Start walking
+          [:idle-left :idle-right] -- (and (> ax 0) (<= (* ax ax') 0)) -> :walk-right
+          [:idle-left :idle-right] -- (and (< ax 0) (<= (* ax ax') 0)) -> :walk-left)]
 
-                    ;; Starts walking
-                    (and (> ax 0) (or (#{:idle-left :idle-right} last-state) (<= (* ax ax') 0))) :walk-right
-                    (and (< ax 0) (or (#{:idle-left :idle-right} last-state) (<= (* ax ax') 0))) :walk-left
-
-                    ;; Otherwise keep doing the same
-                    :else last-state)]
     {:movement    (assoc movement :acceleration new-acceleration
                          :velocity new-velocity)
      :controller  (assoc controller :last-acceleration new-acceleration

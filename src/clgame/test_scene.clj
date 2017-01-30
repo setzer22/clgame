@@ -114,7 +114,8 @@
                  :has-control? true
                  :is-hit? false
                  :hit-timer 0
-                 :max-hit-timer 2}
+                 :max-hit-timer 2
+                 :last-state :idle-right}
     :movement   {:velocity (v2 0 0)
                  :acceleration (v2 0 0)
                  :speed-clamp {:x [-150

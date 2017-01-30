@@ -4,7 +4,7 @@
 
 (spec/def ::state-machine-body
   (spec/+
-   (spec/cat :old-state keyword?
+   (spec/cat :old-state #(or (and (coll? %) (every? keyword? %)) (keyword? %))
              :sep #(or (symbol? %) (keyword? %))
              :condition #(or (is :else) (list? %) (symbol? %))
              :sep2 #(or (symbol? %) (keyword? %))
@@ -34,10 +34,23 @@
   {:style/indent 1}
   [state-var & body]
   (let [lines (maybe-conform ::state-machine-body body "Wrong state machine definition.")
+        lines (mapcat
+               (fn [line]
+                 (if (-> line :old-state coll?)
+                   (mapv #(assoc line :old-state %) (:old-state line))
+                   [line]))
+               lines)
         states-map (reduce
                     (fn [states-map {:keys [old-state] :as line}]
                       (update states-map old-state conjv line))
-                    {} lines)]
+                    {} lines)
+        states-map (reduce
+                    (fn [states-map [k v]]
+                      (if (seq (filter #(= :else (:condition %)) v))
+                        states-map
+                        (update states-map k conj {:old-state k, :condition :else, :new-state k})))
+                    states-map
+                    states-map )]
     `(case ~state-var
              ~@(mapcat
                 (fn [old-state]
@@ -62,13 +75,15 @@
 
     )
 
-  (pprintexpand-2
+  (pprintexpand
    '(state-machine my-curent-state
     :ready   -- grounded? -> :ready
     :ready   -- jump-key? -> :jumping
     :jumping -- still-time? -> :jumping
     :jumping -- :else -> :on-air
     :on-air  -- grounded? -> :ready
-    :on-air  -- :else -> :on-air))
+    :on-air  -- :else -> :on-air
+    [:dafuq :wat :foo]-- :else -> :wat))
 
   )
+

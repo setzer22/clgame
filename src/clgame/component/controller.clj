@@ -13,4 +13,5 @@
   :has-control?      :> boolean?
   :is-hit?           :> boolean?
   :hit-timer         :> :conform/float
-  :max-hit-timer     :> :conform/float)
+  :max-hit-timer     :> :conform/float
+  :last-state        :> keyword?)
