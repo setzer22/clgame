@@ -4,7 +4,8 @@
             [clgame.message :as m]
             [clgame.vector :refer :all]
             [clgame.system.default :refer [register-default]]
-            [clgame.macros.state-machine :refer [state-machine]])
+            [clgame.macros.state-machine :refer [state-machine]]
+            [clgame.component-ref :as cr])
   (:import [org.lwjgl.input Keyboard Mouse]))
 
 (defn key? [k]
@@ -107,4 +108,4 @@
      ::m/messages (if (not= new-state last-state)
                     [(m/mk-message e-id e-id new-state :change-state)])}))
 
-(register-default :Controller [:controller :ground-sensor :movement] it)
+(register-default :Controller [(cr/mk-ref ::cr/self :controller) (cr/mk-ref ::cr/self :ground-sensor) (cr/mk-ref ::cr/self :movement)] it)

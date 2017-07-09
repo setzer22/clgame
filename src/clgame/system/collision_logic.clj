@@ -7,7 +7,8 @@
             [clgame.macros.common :refer [maybe-conform]]
             [clgame.system.registration :refer [register-system]]
             [clojure.set :as set]
-            [clojure.tools.namespace.find :as ns-find]))
+            [clojure.tools.namespace.find :as ns-find]
+            [clgame.component-ref :as cr]))
 
 ;; The collision logic system does nothing by itself, and relies on multiple
 ;; subsystems that hook into it. For example, a player_damage subsystem might
@@ -127,10 +128,11 @@
      scene collisions)))
 
 (register-system :CollisionLogic
-                 (sc/add-system
-                  scene
-                  (s/mk-system :CollisionLogic [:collider]
-                               collision-logic-system-executor)))
+  (sc/add-system
+   scene
+   (s/mk-system :CollisionLogic
+                [] ; @Deprecated
+                collision-logic-system-executor)))
 
 ;; Automatically load all collision hooks when this ns is loaded.
 ;; This populates the hooks array with all declared collision hooks.

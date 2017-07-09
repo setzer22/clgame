@@ -7,7 +7,8 @@
    [clgame.vector  :refer :all]
    [clgame.message :as m]
    [clgame.scene :as sc]
-   [clojure.set :as set]))
+   [clojure.set :as set]
+   [clgame.component-ref :as cr]))
 
 (defn in? [seq elm]
   (some #(= elm %) seq))
@@ -44,7 +45,7 @@
 (register-system :Collision
   (sc/add-system
    scene
-   (s/mk-system :Collision [:transform :collider]
+   (s/mk-system :Collision [] ; @Deprecated
                 collision-system-executor)))
 
 (comment "TEST"

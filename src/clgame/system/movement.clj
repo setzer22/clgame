@@ -3,7 +3,8 @@
             [clgame.scene :as sc]
             [clgame.vector :refer :all]
             [clgame.system.registration :refer [register-system]]
-            [clgame.system.default :refer [default-system-executor]])
+            [clgame.system.default :refer [default-system-executor]]
+            [clgame.component-ref :as cr])
   (:import [org.lwjgl.input Keyboard Mouse]))
 
 (def delta-time (/ 1 60)); TODO !!
@@ -29,5 +30,5 @@
   (sc/add-system
    scene
    (s/mk-system :Movement
-                [:transform :movement]
-                (default-system-executor [:transform :movement] move))))
+                [] ; @Deprecated
+                (default-system-executor [(cr/mk-ref ::cr/self :transform) (cr/mk-ref ::cr/self :movement)] move))))

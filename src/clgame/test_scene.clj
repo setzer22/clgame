@@ -1,3 +1,9 @@
+;;(defun run-game ())
+  ;;(interactive))
+  ;;(cider-eval-file "/home/josep/Repositories/clgame/src/clgame/test_scene.clj"))
+
+;;(global-set-key (kbd "<f2>") 'run-game)
+
 (ns clgame.test-scene
   (:require [clgame.utils]
             [clgame.gl :as gl]
@@ -60,6 +66,14 @@
                 (spr/get-sprite-uv hand-spritesheet 1 0)
                 {:w w :h h
                  :texture-id 5})
+    :animation {:animations {:left [[1 0]]
+                             :right [[0 0]]}
+                :current-animation :right
+                :frame-index 0
+                :frame-time 0.1
+                :current-frame-time 0.0
+                :spritesheet hand-spritesheet}
+    :hand-anim {}
     :collider  {:static true
                 :tags #{:enemy}
                 :w w :h h}
@@ -103,7 +117,7 @@
                  :spritesheet pacman-spritesheet}
     :collider   {:tags #{:player}
                  :static false
-                :w 50.0 :h 50.0}
+                 :w 50.0 :h 50.0}
     :controller {:jump-speed 300.0
                  :walk-acceleration 1000.0
                  :gravity -600.0
@@ -130,6 +144,8 @@
       (add-player)
       (add-hand 400 70 50.0 50.0)
       (add-obstacle 700.0 50.0 150.0 150.0)
+      (add-system :HandMotion)
+      (add-system :HandAnim)
       (add-system :Controller)
       (add-system :Movement)
       (add-system :HandMotion)
@@ -139,8 +155,8 @@
       (add-system :GroundSensor)
       (add-system :Animation)
       (add-system :Renderer)
-      (add-system :DebugKeys)
-      ))
+      (add-system :DebugKeys)))
+
 
 (try (game-loop/run-game test-scene)
      (catch Throwable e (do (gl/destroy-display)

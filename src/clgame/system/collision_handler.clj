@@ -6,7 +6,8 @@
    [clgame.vector :refer :all]
    [clgame.message :as m]
    [clgame.scene :as sc]
-   [clojure.set :as set]))
+   [clojure.set :as set]
+   [clgame.component-ref :as cr]))
 
 (def abs #(Math/abs %))
 
@@ -52,6 +53,7 @@
 (register-system :CollisionHandler
   (sc/add-system
    scene
-   (s/mk-system :CollisionHandler [:transform :collider]
+   (s/mk-system :CollisionHandler
+                [] ; @Deprecated
                 collision-handler-executor)))
 

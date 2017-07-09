@@ -4,7 +4,8 @@
             [clgame.system :as s]
             [clgame.scene :as sc]
             [clgame.system.default :refer [register-default]]
-            [clgame.message :as m]))
+            [clgame.message :as m]
+            [clgame.component-ref :as cr]))
 
 (def delta-time (/ 1 60.0))
 
@@ -43,4 +44,4 @@
     {:animation new-animation
      :sprite (merge sprite (get-tex-coords new-animation))}))
 
-(register-default :Animation [:sprite :animation] animation)
+(register-default :Animation [(cr/mk-ref ::cr/self :sprite) (cr/mk-ref ::cr/self :animation)] animation)

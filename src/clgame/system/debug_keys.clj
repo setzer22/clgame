@@ -4,7 +4,8 @@
             [clgame.entity :as e]
             [clgame.message :as m]
             [clgame.system.registration :refer [register-system]]
-            [clgame.system.default :as ex :refer [default-system-executor]])
+            [clgame.system.default :as ex :refer [default-system-executor]]
+            [clgame.component-ref :as cr])
   (:import [org.lwjgl.input Keyboard Mouse]))
 
 (defn debug-keys [e-id [_] inbox]
@@ -18,7 +19,7 @@
                      [nil])
       (sc/add-system
        (s/mk-system :DebugKeys
-                    [:debug-keys]
+                    [] ; @Deprecated
                     (default-system-executor
-                     [:debug-keys]
+                     [(cr/mk-ref ::cr/self :debug-keys)]
                      debug-keys)))))

@@ -3,7 +3,8 @@
             [clgame.scene :as sc]
             [clgame.entity :as e]
             [clgame.system :as s]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [clgame.component-ref :as cr]))
 
 (defn get-position [scene e]
   (get-in scene [::sc/component-data :transform e :position]))
@@ -39,6 +40,7 @@
 (register-system :GroundSensor
   (sc/add-system
    scene
-   (s/mk-system :GroundSensor [:transform :collider]
+   (s/mk-system :GroundSensor
+                [] ; @Deprecated
                 ground-sensor-executor)))
 
