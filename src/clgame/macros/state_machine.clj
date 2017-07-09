@@ -2,6 +2,14 @@
   (:require [clojure.spec :as spec]
             [clgame.macros.common :refer :all]))
 
+(spec/def ::old-state
+  (spec/or
+   :single    keyword?
+   :all       (is 'ALL)
+   :multi     (spec/* keyword?)
+   :not-multi (spec/cat :not 'NOT
+                        :multi (spec/* keyword?))))
+
 (spec/def ::state-machine-body
   (spec/+
    (spec/cat :old-state #(or (and (coll? %) (every? keyword? %)) (keyword? %))

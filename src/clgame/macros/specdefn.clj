@@ -99,7 +99,7 @@
        ;;Function spec
        (spec/fdef ~name :args
                   ~(cons `spec/cat (interleave (map #(keyword (str "arg" %)) (range))
-                                                 (map :spec args))))
+                                               (map :spec (map :spec args)))))
        )))
 
 

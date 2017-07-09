@@ -70,9 +70,11 @@
                      jump-key?)
               jump-speed (:y velocity)))
 
-        ;; Animation 'hard-coded' state-machine
-        ;; NOTE: If I had to do a lot of those, I'd consider treating them as graphs with
-        ;;       transition arcs like mecanim does.
+
+        ;; ----------------------------------
+        ;;  Compute the next animation state
+        ;; ----------------------------------
+
         ax  (-> new-acceleration :x)
         ax' (-> controller :last-acceleration :x)
         ax' (if ax' ax' 0)
